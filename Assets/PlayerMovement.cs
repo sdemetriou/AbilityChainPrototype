@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -8,7 +6,8 @@ public class PlayerMovement : MonoBehaviour
   private Collider2D playerCollider;
   private int previousDirection = 1;
   public int FacingDirection => previousDirection;
-  LayerMask groundLayer;
+  private Vector3 spawn;
+  private LayerMask levelLayer;
   [SerializeField] private float movementSpeed = 10;
   [SerializeField] private float Jump = 10;
 
@@ -17,13 +16,13 @@ public class PlayerMovement : MonoBehaviour
   {
     body = GetComponent<Rigidbody2D>();
     playerCollider = GetComponent<Collider2D>();
-    groundLayer = LayerMask.GetMask("Ground");
+    levelLayer = LayerMask.GetMask("LevelGeometry");
   }
 
   // Start is called before the first frame update
   void Start()
   {
-    // Debug.Log(body.velocity.x.GetType());
+    spawn = this.transform.position;
   }
 
   // Update is called once per frame
@@ -37,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     float playerBottom = playerCollider.bounds.center.y - playerCollider.bounds.extents.y;
     Vector2 floorDetectorPosition = new Vector2(body.transform.position.x, playerBottom);
 
-    Collider2D detectedObjects = Physics2D.OverlapCircle(floorDetectorPosition, 1, groundLayer);
+    Collider2D detectedObjects = Physics2D.OverlapCircle(floorDetectorPosition, 1, levelLayer);
     if (detectedObjects && Input.GetButtonDown("Jump"))
     {
       Vector2 jumpForce = new Vector2(0, Jump);
@@ -61,5 +60,13 @@ public class PlayerMovement : MonoBehaviour
     float playerBottom = playerColliderTest.bounds.center.y - playerColliderTest.bounds.extents.y;
     Vector3 floorDetectorPosition = new Vector3(this.transform.position.x, playerBottom, 0);
     Gizmos.DrawWireSphere(floorDetectorPosition, 1);
+  }
+
+  void OnTriggerEnter2D(Collider2D collision)
+  {
+    if (collision.CompareTag("sceneBoundary"))
+    {
+      this.transform.position = spawn;
+    }
   }
 }
