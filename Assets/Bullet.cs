@@ -7,9 +7,9 @@ public class Bullet : Projectile
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.CompareTag("Enemy"))
+        if (collision.CompareTag("Drone"))
         {
-            collision.GetComponent<Enemy>()?.absorbDamage(rawDamage);
+            collision.GetComponent<Drone>()?.absorbDamage(rawDamage);
             Destroy(gameObject);
         }
     }
